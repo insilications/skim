@@ -278,6 +278,8 @@ pub enum Action {
     SetPreviewCmd(String),
     /// Set the query to the expanded value
     SetQuery(String),
+    /// Set the command in interactive mode
+    SetCmd(String),
     /// Toggle selection of current item
     Toggle,
     /// Toggle selection of all items
@@ -413,6 +415,7 @@ define_action_catalog! {
     SetHeader(_) => "set-header" => Some(SetHeader(arg)),
     SetPreviewCmd(_) => "set-preview-cmd" => Some(SetPreviewCmd(arg.unwrap_or_default())),
     SetQuery(_) => "set-query" => Some(SetQuery(arg.unwrap_or_default())),
+    SetCmd(_) => "set-cmd" => Some(SetCmd(arg.unwrap_or_default())),
     Suppress => "suppress" => Some(Suppress),
     Toggle => "toggle" => Some(Toggle),
     ToggleAll => "toggle-all" => Some(ToggleAll),

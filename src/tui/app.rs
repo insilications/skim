@@ -1247,6 +1247,12 @@ impl App {
                 self.input.move_to_end();
                 return Ok(self.on_query_changed());
             }
+            SetCmd(value) => {
+                self.item_list.clear_selection();
+                value.clone_into(&mut self.cmd);
+                self.options.cmd = Some(value.to_owned());
+                return Ok(vec![Event::Reload(self.expand_cmd(value, true))]);
+            }
             Toggle => {
                 self.item_list.toggle();
                 return Ok(self.on_selection_changed());
