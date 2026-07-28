@@ -610,6 +610,12 @@ pub struct SkimOptions {
     #[cfg_attr(feature = "cli", arg(long, help_heading = "Display"))]
     pub header: Option<String>,
 
+    /// Enables setting the header with expanded expressions
+    ///
+    /// The only placeholder currently supported is `{c}`: the current interactive-mode command
+    #[cfg_attr(feature = "cli", arg(long, help_heading = "Display"))]
+    pub header_expanded: bool,
+
     /// Number of lines of the input treated as header
     ///
     /// The  first N lines of the input are treated as the sticky header. When `--with-nth` is set,
@@ -1187,6 +1193,7 @@ impl Default for SkimOptions {
             no_info: Default::default(),
             inline_info: Default::default(),
             header: Default::default(),
+            header_expanded: Default::default(),
             header_lines: Default::default(),
             history_file: Default::default(),
             history_size: 1000,

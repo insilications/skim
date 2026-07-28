@@ -113,6 +113,10 @@ pub struct App {
 
     /// Skim configuration options
     pub options: SkimOptions,
+    /// Copy of the original `cmd` set during initialization.
+    /// Used to restore the current interactive-mode command
+    /// when using `toggle-cmd` bindings.
+    pub cmd_original: String,
     /// The command being executed
     pub cmd: String,
     /// Pre-computed layout template built from options; rebuilt when options change.
@@ -262,6 +266,7 @@ impl Default for App {
             saved_cmd_input: String::new(),
             options: opts,
             cmd: String::new(),
+            cmd_original: String::new(),
             last_header_height: initial_header_height,
             layout_template,
             layout,
@@ -335,6 +340,7 @@ impl App {
             cmd_history_index: None,
             saved_cmd_input: String::new(),
             options,
+            cmd_original: cmd.clone(),
             cmd,
             last_header_height: initial_header_height,
             layout_template,
@@ -1235,6 +1241,24 @@ impl App {
                 // Command counterpart of `SetPreviewCmd`: swap the command
                 // template (used by interactive mode and `refresh-cmd`) and
                 // immediately re-run it.
+                self.cmd.clone_from(cmd);
+                self.options.cmd = Some(cmd.clone());
+                self.item_list.clear_selection();
+                let expanded_cmd = self.expand_cmd(cmd, true);
+                return Ok(vec![Event::Reload(expanded_cmd)]);
+            }
+            ToggleCmd(cmd) => {
+                // If the current command template is the same as the one being
+                // toggled, restore the current interactive-mode command
+                // with `cmd_original` and immediately re-run it.
+                // Otherwise, set the new command template and immediately re-run it.
+                if self.cmd == *cmd {
+                    self.cmd.clone_from(&self.cmd_original);
+                    self.options.cmd = Some(self.cmd_original.clone());
+                    self.item_list.clear_selection();
+                    let expanded_cmd = self.expand_cmd(&self.cmd_original, true);
+                    return Ok(vec![Event::Reload(expanded_cmd)]);
+                }
                 self.cmd.clone_from(cmd);
                 self.options.cmd = Some(cmd.clone());
                 self.item_list.clear_selection();

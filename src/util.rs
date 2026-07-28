@@ -7,6 +7,8 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::prelude::v1::*;
 
+const COMMAND_PLACEHOLDER: &str = "{c}";
+
 #[cfg(feature = "cli")]
 /// Unescape a delimiter string to handle escape sequences like \x00, \t, \n, etc.
 ///
@@ -246,6 +248,25 @@ pub fn printf<'a>(
         .into_iter()
         .reduce(|a: String, b| a + &escaped_item + &b)
         .unwrap_or_default()
+}
+
+/// Replace the fields in `header`
+///
+/// Replaces:
+/// - `{c}` -> current command
+pub fn printf_header(header: &str, cmd: &str) -> String {
+    let Some(placeholder_start) = header.find(COMMAND_PLACEHOLDER) else {
+        return header.to_owned();
+    };
+
+    let placeholder_end = placeholder_start + 3;
+    let mut replaced_header = String::with_capacity(header.len() - 3 + cmd.len());
+
+    replaced_header.push_str(&header[..placeholder_start]);
+    replaced_header.push_str(cmd);
+    replaced_header.push_str(&header[placeholder_end..]);
+
+    replaced_header
 }
 
 #[cfg(test)]

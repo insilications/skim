@@ -410,6 +410,13 @@ define_action_catalog! {
     Toggle => "toggle" => Some(Toggle),
     /// Toggle selection of all items
     ToggleAll => "toggle-all" => Some(ToggleAll),
+    /// Toggle the interactive-mode command and rerun it.
+    ///
+    /// If the current interactive-mode command is the same as the one being toggled,
+    /// toggle the command set during initialization.
+    /// Otherwise, it toggles the new command.
+    /// The argument is an expanded expression, see COMMAND EXPANSION for details.
+    ToggleCmd(String) => "toggle-cmd" => arg.map(ToggleCmd),
     /// Toggle and move in
     ToggleIn => "toggle-in" => Some(ToggleIn),
     /// Toggle interactive mode

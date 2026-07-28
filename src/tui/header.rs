@@ -6,7 +6,7 @@ use crate::tui::BorderType;
 use crate::tui::options::TuiLayout;
 use crate::tui::util::{char_display_width, clip_line_to_chars, style_line, style_text};
 use crate::tui::widget::{SkimRender, SkimWidget};
-use crate::{DisplayContext, SkimItem, SkimOptions};
+use crate::{DisplayContext, SkimItem, SkimOptions, util};
 
 use ansi_to_tui::IntoText;
 use ratatui::buffer::Buffer;
@@ -121,7 +121,15 @@ fn apply_tabstop(text: &str, tabstop: usize) -> String {
 impl SkimWidget for Header {
     fn from_options(options: &SkimOptions, theme: Arc<ColorTheme>) -> Self {
         let tabstop = max(1, options.tabstop);
-        let header = options.header.clone().unwrap_or_default();
+        let header = if let Some(header) = &options.header {
+            if options.header_expanded {
+                util::printf_header(header, options.cmd.clone().unwrap_or_default().as_str())
+            } else {
+                header.clone()
+            }
+        } else {
+            String::new()
+        };
 
         // Expand tabs once during initialization
         let expanded_header = apply_tabstop(&header, tabstop);
